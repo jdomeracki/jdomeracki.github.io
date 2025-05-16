@@ -15,11 +15,14 @@ title: Hunting for Bucket Traversals in Google's Client Libraries
     * [Diagram of a sample vulnerable application](#diagram-of-a-sample-vulnerable-application)
 - [Summary](#summary)
 
+---
 
 ## Preface
 This writeup picks up pretty much where the last one ended, that is when I found an exploitable instance of a [bucket traversal](https://jdomeracki.github.io/2024/11/09/sketchy_cheat_sheet/#bucket-traversal) vulnerability and [stumbled on an N-day in Go Cloud Storage client library](https://jdomeracki.github.io/2024/11/09/sketchy_cheat_sheet/#stumbling-on-an-n-day-in-go-cloud-storage-client-library).
 
 Intrigued by this finding, I decided to audit other [Cloud Storage client libraries](https://cloud.google.com/storage/docs/reference/libraries) focused solely on variants of similar issues.
+
+---
 
 ## Bucket Traversal 101
 So what is a _Bucket Traversal_ to begin with?
@@ -37,6 +40,8 @@ For the purpose of this writeup, I will differentiate between two subsets of buc
 There is little I could add to what practices could prevent issues from `#1` (AppSec 101)\
 Therefore, I will focus primarily on class `#2`, that is when the implementation of the vendor maintained library is vulnerable itself.
 
+---
+
 ## Case study
 
 ### TL;DR
@@ -52,6 +57,8 @@ Here's the recently disclosed report -> https://bughunters.google.com/reports/vr
 > Why is there no GitHub Security Advisory (GHSA) and/or CVE published you might wonder (?)\
 > Well that's a topic for a separate discussion - I was told that at least a post factum comment will be eventually added.
 
+---
+
 ### Overview
 [Python Client for Google Cloud Storage()](https://cloud.google.com/python/docs/reference/storage/latest) is an Open Source project maintained by Google.
 
@@ -64,6 +71,8 @@ This library is used in many foundational Python-based ML/AI Open Source project
 - [Ray](https://grep.app/search?f.repo.pattern=ray&q=from+google.cloud+import+storage)
 
 > The relatively modest number of stars on GitHub does not properly reflects its significance
+
+---
 
 ### Technical analysis
 Google Cloud Storage exposes three distinct APIs:
@@ -85,9 +94,13 @@ Issue stemmed from the fact that the URL path was constructed insecurely (lack o
 
 As a result, if `blob.name` was supplied from user input, then an attacker could make use of the classic *dot-dot-slash* technique and upload a file to a bucket unintended by the victim eg. `../bucket/object`
 
+---
+
 ### PoC
 Here's the orginal PoC recording, based on the official [sample snippet](https://github.com/googleapis/python-storage/blob/main/samples/snippets/storage_transfer_manager_upload_chunks_concurrently.py)
 <iframe src="https://drive.google.com/file/d/1_NAaJ-PjQRy7kcEJ4NW7sZ-YdfF79S5g/preview" width="640" height="480" allow="autoplay"></iframe>
+
+---
 
 ### Attack scenario
 Depending on the IAM permissions granted to the underlying Service Account this could lead to malicious scenarios such as:
@@ -96,6 +109,8 @@ Depending on the IAM permissions granted to the underlying Service Account this 
 
 Potential impact associated with vector `#1` is self evident.\
 I think that scenario `#2` is far more interesting.
+
+---
 
 ### Diagram of a sample vulnerable application
 
@@ -110,6 +125,8 @@ This fictitious service meets following criteria:
   <img src="https://storage.googleapis.com/bucket_traversals/giga_upload_bucket_traversal_diagram.png"/>
 </a>
 </p>
+
+---
 
 ## Summary
 Bucket traversal appears to be an underresearched class of vulnerabilities, requiring significant context-specific knowledge for comprehensive understanding.\
