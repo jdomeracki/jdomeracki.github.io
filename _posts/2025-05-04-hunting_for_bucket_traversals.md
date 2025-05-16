@@ -53,7 +53,7 @@ Timeline:
 - I submitted this issue to Google VRP on `July 14th 2024`
 - The vulnerability was [fixed](https://github.com/googleapis/python-storage/commit/bf4d0e0a2ef1d608d679c22b13d8f5d90b39c7b2) in version [2.18.1](https://github.com/googleapis/python-storage/releases/tag/v2.18.1) on `August 6th 2024`
 
-Here's the recently disclosed report -> https://bughunters.google.com/reports/vrp/h1K5SciPh
+Here's the recently disclosed report -> [https://bughunters.google.com/reports/vrp/h1K5SciPh](https://bughunters.google.com/reports/vrp/h1K5SciPh)
 > Why is there no GitHub Security Advisory (GHSA) and/or CVE published you might wonder (?)\
 > Well that's a topic for a separate discussion - I was told that at least a post factum comment will be eventually added.
 
@@ -83,7 +83,7 @@ Google Cloud Storage exposes three distinct APIs:
 I decided to focus on the XML API due to its subjectively [error prone schema](https://cloud.google.com/storage/docs/request-endpoints#xml-api) & [interoperability with Amazon Simple Storage Service (Amazon S3)](https://cloud.google.com/storage/docs/interoperability#xml_api)
 
 After some brief source code review & grey box testing, I pinpointed a spot where a traversal could occur:\
-https://github.com/googleapis/python-storage/blob/d5d3c68a6e5c6f8cefc59892c1ccceaf181ff32d/google/cloud/storage/transfer_manager.py#L1084-L1087
+[https://github.com/googleapis/python-storage/blob/d5d3c68a6e5c6f8cefc59892c1ccceaf181ff32d/google/cloud/storage/transfer_manager.py#L1084-L1087](https://github.com/googleapis/python-storage/blob/d5d3c68a6e5c6f8cefc59892c1ccceaf181ff32d/google/cloud/storage/transfer_manager.py#L1084-L1087)
 
 Issue stemmed from the fact that the URL path was constructed insecurely (lack of context specific encoding)
 ```python
